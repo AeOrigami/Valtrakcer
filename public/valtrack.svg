@@ -1,0 +1,18 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+
+  
+  <!-- Stylized V -->
+  <path d="M64 72 L104 184 L128 144 L152 184 L192 72 L168 72 L148 132 L128 96 L108 132 L88 72 Z"
+        fill="#FF4655"/>
+  
+  <!-- Crosshair -->
+  <g stroke="#FFFFFF" stroke-width="4" stroke-linecap="round">
+    <line x1="128" y1="40" x2="128" y2="64"/>
+    <line x1="128" y1="192" x2="128" y2="216"/>
+    <line x1="40" y1="128" x2="64" y2="128"/>
+    <line x1="192" y1="128" x2="216" y2="128"/>
+  </g>
+  
+  <!-- Center dot -->
+  <circle cx="128" cy="128" r="6" fill="#FFFFFF"/>
+</svg>
