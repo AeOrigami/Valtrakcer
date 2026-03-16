@@ -25,4 +25,4 @@ __pycache__
 *.sln
 *.sw?
 src/backend/.env
-apitemplate/*s
+apitemplate/*
