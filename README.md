@@ -25,3 +25,14 @@ Use two terminals from the project root:
 Or use the combined command:
 `npm run dev`
 
+## Populate the database
+
+1. In `src/backend/.env`, set at least these values:
+	- `KEY=HDEV-your-key-here`
+	- `PUUID=your-starting-player-puuid`
+2. Make sure MongoDB is running locally on `mongodb://localhost:27017`.
+3. From the project root, run:
+	`python src/backend/dbpopulate(opt).py`
+
+This script recursively downloads players, matches, and MMR history and inserts them into the local `valtracker` database.
+
