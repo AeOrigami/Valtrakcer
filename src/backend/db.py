@@ -20,7 +20,7 @@ class db:
         self.matchdb=self.mydb["matches"]
         self.mmrhistorydb=self.mydb["mmrhistory"]
         self.players=self.mydb["players"]
-        self.apikey=os.environ.get("APIKEY")
+        self.apikey=os.environ.get("KEY") or os.environ.get("APIKEY")
 
     def refresh(self, puuid=os.environ.get("PUUID"), region="eu", platform="pc"):
         """"
@@ -115,8 +115,7 @@ class db:
                                                 "history.$.stats.finalscore_won":finalscore_won,
                                                 "history.$.stats.finalscore_lost":finalscore_lost}})
                 break
-
-      
+   
     def downloadmatch(self,matchid,region="eu"):
         """
         Downloads match data for a given match ID and region, and stores it in the match database.
@@ -220,14 +219,7 @@ class db:
             self.updatemmrhistory(matchdata["data"],puuid)
             
     def insertmatch(self,matchdata):
-        """
-        Inserts match data into the match database.
-        This function takes match data as input and inserts it into the match database. The match data should be a dictionary containing the match information, including a unique match ID that will be used as the document ID in the database.
-        Args:
-            matchdata (dict): The match data to be inserted into the database. It should contain a unique match ID under the key "metadata.match_id".
-        Returns:
-            pymongo.results.InsertOneResult: The result of the insert operation, which includes information about the inserted document.
-        """
+
         if matchdata is None or matchdata == False:
             print("Error: Match data is None or False. Skipping insert.")
             return None
@@ -372,26 +364,18 @@ class db:
     def gettop10players(self):
         pipeline = [
     {
-        '$unwind': {
-            'path': '$history'
-        }
-    }, {
-        '$sort': {
-            'history.stats.kills': -1
-        }
+        '$unwind': '$history'
     }, {
         '$group': {
             '_id': '$_id', 
             'history': {
-                '$push': '$history'
-            }
-        }
-    }, {
-        '$project': {
-            'history': {
-                '$slice': [
-                    '$history', 10
-                ]
+                '$topN': {
+                    'output': '$history', 
+                    'sortBy': {
+                        'history.stats.kills': -1
+                    }, 
+                    'n': 10
+                }
             }
         }
     }, {
