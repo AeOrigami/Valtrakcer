@@ -406,14 +406,14 @@ class db:
         pipeline = [
     {
         '$match': {
-            'data.players.puuid': '082e989c-c557-5303-a5f5-0df21787ea28'
+            'data.players.puuid': puuid
         }
     }, {
         '$unwind': '$data.players'
     }, {
         '$match': {
             'data.players.puuid': {
-                '$ne': '082e989c-c557-5303-a5f5-0df21787ea28'
+                '$ne': puuid
             }
         }
     }, {
