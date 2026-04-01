@@ -207,6 +207,7 @@ class db:
             return None
         doc["history"] = sorted(doc.get("history", []), key=lambda entry: entry.get("date", ""), reverse=True)
         return doc
+
     def floodupdatemmrhistory(self,matchid):
         """
         Updating all of the mmrhistory of all the players 
@@ -400,7 +401,14 @@ class db:
     }
 ]
         return list(self.mmrhistorydb.aggregate(pipeline))
-        
+    
+    def hideindex(self, colleciton, indexname):
+        self.mydb.command({"collMod": colleciton, "index": {"name": indexname, "hidden": True}})
+    def enableindex(self, colleciton, indexname):
+        self.mydb.command({"collMod": colleciton, "index": {"name": indexname, "hidden": False}})
+
+    def getmatchesbtwdates(self, start_date, end_date):
+        return self.matchdb.find(filter={'data.metadata.started_at': {'$gte': start_date, '$lte': end_date}}, projection={'_id': 1, "data.metadata.started_at": 1})
 if __name__== "__main__":
     database=db()
     
