@@ -237,8 +237,8 @@ class db:
     {"tag": tag, "name": name},
     collation={"locale": "en", "strength": 2}
 )
-
     def getplayer(self, puuid):
+
         return self.players.find_one({"_id": puuid})
 
     def insertplayer(self,puuid,data):
@@ -402,13 +402,89 @@ class db:
 ]
         return list(self.mmrhistorydb.aggregate(pipeline))
     
+    def getmostplayedwith(self, puuid):
+        pipeline = [
+    {
+        '$match': {
+            'data.players.puuid': '082e989c-c557-5303-a5f5-0df21787ea28'
+        }
+    }, {
+        '$unwind': '$data.players'
+    }, {
+        '$match': {
+            'data.players.puuid': {
+                '$ne': '082e989c-c557-5303-a5f5-0df21787ea28'
+            }
+        }
+    }, {
+        '$group': {
+            '_id': {
+                'puuid': '$data.players.puuid', 
+                'name': '$data.players.name', 
+                'tag': '$data.players.tag'
+            }, 
+            'count': {
+                '$sum': 1
+            }
+        }
+    }, {
+        '$sort': {
+            'count': -1
+        }
+    }, {
+        '$group': {
+            '_id': '$count', 
+            'players': {
+                '$push': {
+                    'puuid': '$_id.puuid', 
+                    'name': '$_id.name', 
+                    'tag': '$_id.tag', 
+                    'count': '$count'
+                }
+            }
+        }
+    }, {
+        '$sort': {
+            '_id': -1
+        }
+    }, {
+        '$unwind': '$players'
+    }, {
+        '$limit': 5
+    }, {
+        '$replaceWith': '$players'
+    }
+]
+        return list(self.matchdb.aggregate(pipeline))
+
     def hideindex(self, colleciton, indexname):
         self.mydb.command({"collMod": colleciton, "index": {"name": indexname, "hidden": True}})
+
     def enableindex(self, colleciton, indexname):
         self.mydb.command({"collMod": colleciton, "index": {"name": indexname, "hidden": False}})
 
+    def mostplayedagents(self):
+        pipeline = [
+    {
+        '$unwind': '$data.players'
+    }, {
+        '$group': {
+            '_id': '$data.players.agent.name', 
+            'count': {
+                '$sum': 1
+            }
+        }
+    }, {
+        '$sort': {
+            'count': -1
+        }
+    }
+]
+        return list(self.matchdb.aggregate(pipeline))
+
     def getmatchesbtwdates(self, start_date, end_date):
         return self.matchdb.find(filter={'data.metadata.started_at': {'$gte': start_date, '$lte': end_date}}, projection={'_id': 1, "data.metadata.started_at": 1})
+
 if __name__== "__main__":
     database=db()
     
