@@ -9,12 +9,7 @@ Project for data management exam.
 	`npm install`
 3. Install backend dependencies:
 	`pip install -r src/backend/requirements.txt`
-4. Create a `.env` file in `src/backend/.env` with your HenrikDev API key named `KEY`:
-
-	```env
-	KEY=HDEV-your-key-here
-	```
-
+4. Rename `src/backend/.env.example` to `src/backend/.env` and fill in the required values
 ## Run
 
 Use two terminals from the project root:
